@@ -1,0 +1,38 @@
+name: Deploy React App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # 只有推送到 main 分支时触发
+  workflow_dispatch: # 允许手动运行
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 使用最新的稳定版本
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # ❗ 关键：根据您的构建工具更改此路径
+          # 如果是 Vite/webpack 默认，使用 dist：
+          publish_dir: ./dist
+          # 如果是 Create React App (CRA) 默认，使用 build：
+          # publish_dir: ./build
+
+          # 部署到 gh-pages 分支
+          publish_branch: gh-pages
